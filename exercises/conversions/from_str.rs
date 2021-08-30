@@ -11,21 +11,25 @@ struct Person {
     age: usize,
 }
 
-// I AM NOT DONE
-
-// Steps:
-// 1. If the length of the provided string is 0, an error should be returned
-// 2. Split the given string on the commas present in it
-// 3. Only 2 elements should be returned from the split, otherwise return an error
-// 4. Extract the first element from the split operation and use it as the name
-// 5. Extract the other element from the split operation and parse it into a `usize` as the age
-//    with something like `"4".parse::<usize>()`
-// 5. If while extracting the name and the age something goes wrong, an error should be returned
-// If everything goes well, then return a Result of a Person object
-
 impl FromStr for Person {
     type Err = Box<dyn error::Error>;
     fn from_str(s: &str) -> Result<Person, Self::Err> {
+        if s.matches(",").count() == 1
+        {
+            let mut values = s.split(",");
+            if values.clone().all(|value| !value.is_empty()) {
+                if let (Some(nameValue), Some(ageValue)) = (values.next(), values.next()) {
+                    if let Ok(age) = ageValue.to_string().parse::<usize>() {
+                        return Ok(Person {
+                            name: nameValue.to_string(),
+                            age
+                        })
+                    }
+                }
+            }
+        }
+
+        Err(Self::Err::from("Invalid input for person!"))
     }
 }
 
