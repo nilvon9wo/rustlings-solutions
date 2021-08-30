@@ -11,7 +11,9 @@ struct Person {
     age: usize,
 }
 
-// I AM NOT DONE
+
+
+
 
 // Steps:
 // 1. If the length of the provided string is 0, an error should be returned
@@ -26,6 +28,22 @@ struct Person {
 impl FromStr for Person {
     type Err = Box<dyn error::Error>;
     fn from_str(s: &str) -> Result<Person, Self::Err> {
+        if s.matches(",").count() == 1
+        {
+            let mut values = s.split(",");
+            if values.clone().all(|value| !value.is_empty()) {
+                if let (Some(nameValue), Some(ageValue)) = (values.next(), values.next()) {
+                    if let Ok(age) = ageValue.to_string().parse::<usize>() {
+                        return Ok(Person {
+                            name: nameValue.to_string(),
+                            age
+                        })
+                    }
+                }
+            }
+        }
+
+        Err(Self::Err::from("Invalid input for person!"))
     }
 }
 
